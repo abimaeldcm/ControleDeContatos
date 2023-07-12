@@ -47,5 +47,12 @@ namespace ControleDeContatos.Repositorio
 
             return contatoDB;
         }
+
+        public ContatoModel ApagarContato(int id)
+        {
+            _bancoContext.Remove(ListarPorId(id));
+            _bancoContext.SaveChanges();
+            return ListarPorId(id);
+        }
     }
 }

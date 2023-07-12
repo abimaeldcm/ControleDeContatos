@@ -44,10 +44,10 @@ namespace ControleDeContatos.Controllers
             _contatoRepositorio.Atualizar(contatoid);
             return RedirectToAction("Index");
         }
-        [HttpPost]
-        public IActionResult ApagarContato(int id)
+       
+        public IActionResult Apagar(int id)
         {
-            _contatoRepositorio.ApagarContato(id);
+            _contatoRepositorio.Apagar(id);
             return RedirectToAction("Index");
         }
     }

@@ -29,10 +29,11 @@ namespace ControleDeContatos
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<BancoContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DataBase")));
             services.AddScoped<IContatoRepositorio, ContatoRepositorio>(); //toda vez que chamare a icontatorepositorio vai ser chamado é o contato repositorio
+            services.AddScoped<Seeding>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Seeding seedingService)
         {
             if (env.IsDevelopment())
             {
@@ -42,6 +43,9 @@ namespace ControleDeContatos
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            seedingService.Seend();
+
             app.UseStaticFiles();
 
             app.UseRouting();

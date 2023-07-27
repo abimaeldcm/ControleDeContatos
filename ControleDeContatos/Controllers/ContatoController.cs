@@ -35,20 +35,60 @@ namespace ControleDeContatos.Controllers
         [HttpPost]
         public IActionResult Criar(ContatoModel contatoid)
         {
-            _contatoRepositorio.Adicionar(contatoid);
-            return RedirectToAction("Index");
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _contatoRepositorio.Adicionar(contatoid);
+                    TempData["MensagemSucesso"] = "Contato cadastrado com sucesso";
+                    return RedirectToAction("Index");
+                }
+                return View(contatoid);
+            }
+            catch (System.Exception erro)
+            {
+
+                TempData["MensagemErro"] = "Ops!! Não conseguimos cadastrar o seu contato, tente novamente! Destalhes do erro:" + erro.Message;
+                return RedirectToAction("Index");
+            }
         }
         [HttpPost]
         public IActionResult Alterar(ContatoModel contatoid)
         {
-            _contatoRepositorio.Atualizar(contatoid);
-            return RedirectToAction("Index");
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _contatoRepositorio.Atualizar(contatoid);
+                    TempData["MensagemSucesso"] = "Contato alterado com sucesso";
+
+                    return RedirectToAction("Index");
+                }
+                return View("Editar", contatoid);
+            }
+            catch (System.Exception erro)
+            {
+
+                TempData["MensagemErro"] = "Ops!! Não conseguimos alterar o seu contato, tente novamente! Destalhes do erro:" + erro.Message;
+                return RedirectToAction("Index");
+            }
         }
-       
+
         public IActionResult Apagar(int id)
         {
-            _contatoRepositorio.Apagar(id);
-            return RedirectToAction("Index");
+            try
+            {
+                _contatoRepositorio.Apagar(id);
+                TempData["MensagemSucesso"] = "Contato deletado com sucesso";
+                return RedirectToAction("Index");
+            }
+            catch (System.Exception erro)
+            {
+
+                TempData["MensagemErro"] = "Ops!! Não conseguimos deletar o seu contato, tente novamente! Destalhes do erro:" + erro.Message;
+                return RedirectToAction("Index"); ;
+            }
+
         }
     }
 }

@@ -1,7 +1,9 @@
 using ControleDeContatos.Data;
+using ControleDeContatos.Helper;
 using ControleDeContatos.Repositorio;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,8 +30,19 @@ namespace ControleDeContatos
             services.AddControllersWithViews();
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<BancoContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DataBase")));
-            services.AddScoped<IContatoRepositorio, ContatoRepositorio>(); //toda vez que chamare a icontatorepositorio vai ser chamado é o contato repositorio
+            services.AddScoped<IContatoRepositorio, ContatoRepositorio>();
+            services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>(); //toda vez que chamare a icontatorepositorio vai ser chamado é o contato repositorio
             services.AddScoped<Seeding>();
+
+            //configurações da sessao: 
+            //tem mais no configuere
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<ISessao, Sessao>();
+            services.AddSession(o =>
+            {
+                o.Cookie.HttpOnly = true;
+                o.Cookie.IsEssential = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,12 +64,15 @@ namespace ControleDeContatos
             app.UseRouting();
 
             app.UseAuthorization();
+            
+            //Aqui vamos habilitar as sessões
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Login}/{action=Index}/{id?}");
             });
         }
     }

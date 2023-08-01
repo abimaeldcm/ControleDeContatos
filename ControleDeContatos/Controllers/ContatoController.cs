@@ -68,7 +68,6 @@ namespace ControleDeContatos.Controllers
             }
             catch (System.Exception erro)
             {
-
                 TempData["MensagemErro"] = "Ops!! Não conseguimos alterar o seu contato, tente novamente! Destalhes do erro:" + erro.Message;
                 return RedirectToAction("Index");
             }

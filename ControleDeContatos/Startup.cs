@@ -38,6 +38,7 @@ namespace ControleDeContatos
             //tem mais no configuere
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<ISessao, Sessao>();
+            services.AddScoped<IEmail, Email>();
             services.AddSession(o =>
             {
                 o.Cookie.HttpOnly = true;

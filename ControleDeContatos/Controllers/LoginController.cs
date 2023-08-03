@@ -8,13 +8,16 @@ namespace ControleDeContatos.Controllers
     public class LoginController : Controller
     {
 
-        protected readonly IUsuarioRepositorio _usuarioRepositorio;
-        protected readonly ISessao _sessao;
+        private readonly IUsuarioRepositorio _usuarioRepositorio;
+        private readonly ISessao _sessao;
+        private readonly IEmail _email;
 
-        public LoginController(IUsuarioRepositorio usuarioRepositorio, ISessao sessao)
+
+        public LoginController(IUsuarioRepositorio usuarioRepositorio, ISessao sessao, IEmail email)
         {
             _usuarioRepositorio = usuarioRepositorio;
             _sessao = sessao;
+            _email = email;
         }
         public IActionResult Index()
         {
@@ -84,8 +87,20 @@ namespace ControleDeContatos.Controllers
                     if (usuario != null)
                     {
                         string novaSenha = usuario.GerarNovaSenha();
-                        _usuarioRepositorio.Atualizar(usuario);
-                        TempData["MensagemSucesso"] = $"Enviamos para o seu e-mail cadastrado uma nova senha.";
+                        
+
+                        string mensagem = $"Sua nova senha é: {novaSenha} ";
+                        bool emailEnviado =_email.Enviar(usuario.Email, "Sistema de Contatos - Nova Senha", mensagem);
+
+                        if (emailEnviado)
+                        {
+                            TempData["MensagemSucesso"] = $"Enviamos para o seu e-mail cadastrado uma nova senha.";
+                            _usuarioRepositorio.Atualizar(usuario);
+                        }
+                        else
+                        {
+                            TempData["MensagemErro"] = "Não conseguimos enviar a senha de recuperação. Por favor, tente novamente";
+                        }
                         return RedirectToAction("Index", "Login");
 
                     }

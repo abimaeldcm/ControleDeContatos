@@ -1,6 +1,9 @@
 ﻿using ControleDeContatos.Enums;
+using ControleDeContatos.Helper;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
+using System.Runtime.Intrinsics.X86;
 
 namespace ControleDeContatos.Models
 {
@@ -23,8 +26,25 @@ namespace ControleDeContatos.Models
 
         [Required(ErrorMessage = "Digite o senha do usuário")]
         public string Senha { get; set; }
+        public void SetSenhaHash() //Criptografar a minha senha.
+        {
+            Senha = Senha.GerarHash();
+        }
 
         public DateTime DataCadastro { get; set; }
         public DateTime? DataAtualização { get; set; }
+        public string GerarNovaSenha()
+        {
+            string novaSenha = Guid.NewGuid().ToString().Substring(0,8);
+            //Guid.NewGuid(): A função Guid.NewGuid() gera um identificador único global (GUID), que é um valor
+            //aleatório e único.
+            //.ToString(): Converte o valor GUID gerado em uma representação de string.
+            //.Substring(0, 8): Isso extrai os primeiros 8 caracteres da string gerada pelo GUID.
+            //Isso significa que a senha será composta pelos primeiros 8 caracteres do valor GUID,
+            //tornando-a uma senha aleatória de 8 caracteres.
+
+            Senha = novaSenha.GerarHash();
+            return novaSenha;
+        }
     }
 }

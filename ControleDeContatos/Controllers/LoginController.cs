@@ -25,6 +25,11 @@ namespace ControleDeContatos.Controllers
             }
             return View();
         }
+        public IActionResult RedefinirSenha() 
+        {
+            return View("RedefinirSenha");
+
+        }
 
         public IActionResult Sair() 
         {
@@ -67,5 +72,34 @@ namespace ControleDeContatos.Controllers
                 return View(nameof(Index));
             }
         }
+
+        [HttpPost]
+        public IActionResult EnviarLinkParaRedefinirSenha(RedefinirSenhaModel redefinirSenhaModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    UsuarioModel usuario = _usuarioRepositorio.BuscarUsuarioEmailLogin(redefinirSenhaModel.Email, redefinirSenhaModel.Login);
+                    if (usuario != null)
+                    {
+                        string novaSenha = usuario.GerarNovaSenha();
+                        _usuarioRepositorio.Atualizar(usuario);
+                        TempData["MensagemSucesso"] = $"Enviamos para o seu e-mail cadastrado uma nova senha.";
+                        return RedirectToAction("Index", "Login");
+
+                    }
+                    TempData["MensagemErro"] = "Login e/ou E-mail incorreto(s). Por favor, tente novamente";
+
+                }
+                return View("RedefinirSenha");
+            }
+            catch (System.Exception erro)
+            {
+                TempData["MensagemErro"] = "Ops!! Não conseguimos redefinir a sua senha, tente novamente! Destalhes do erro:" + erro.Message;
+                return View(nameof(Index));
+            }
+        }
+        
     }
 }

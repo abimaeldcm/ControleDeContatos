@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using ControleDeContatos.Enums;
+using ControleDeContatos.Helper;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace ControleDeContatos.Repositorio
 {
@@ -17,13 +19,14 @@ namespace ControleDeContatos.Repositorio
 
         public bool BuscarUsuario(UsuarioModel login)
         {
-            return _bancoContext.Usuarios.Any(x => x.Login == login.Login && x.Senha == login.Senha);
+            return _bancoContext.Usuarios.Any(x => x.Login == login.Login && x.Senha == login.Senha.GerarHash());
             
         }
         
         public UsuarioModel BuscarUsuarioo(UsuarioModel login)
         {
-            return _bancoContext.Usuarios.FirstOrDefault(x => x.Login == login.Login && x.Senha == login.Senha);
+
+            return _bancoContext.Usuarios.FirstOrDefault(x => x.Login == login.Login && x.Senha == login.Senha.GerarHash());
             
         }
 
@@ -40,6 +43,7 @@ namespace ControleDeContatos.Repositorio
         public UsuarioModel Adicionar(UsuarioModel usuario)
         {
             usuario.DataCadastro = DateTime.Now;
+            usuario.SetSenhaHash(); //Criptografar a minha senha usando Sha1
             _bancoContext.Usuarios.Add(usuario);
             _bancoContext.SaveChanges();
             return usuario;
@@ -77,6 +81,9 @@ namespace ControleDeContatos.Repositorio
             return true;
         }
 
-        
+        public UsuarioModel BuscarUsuarioEmailLogin(string email, string Login)
+        {
+            return _bancoContext.Usuarios.FirstOrDefault(x => x.Email == email && x.Login == Login);
+        }
     }
 }

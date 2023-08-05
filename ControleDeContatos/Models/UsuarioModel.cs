@@ -1,6 +1,7 @@
 ﻿using ControleDeContatos.Enums;
 using ControleDeContatos.Helper;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Runtime.Intrinsics.X86;

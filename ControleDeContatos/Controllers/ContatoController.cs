@@ -1,4 +1,5 @@
 ﻿using ControleDeContatos.Filters;
+using ControleDeContatos.Helper;
 using ControleDeContatos.Models;
 using ControleDeContatos.Repositorio;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +11,17 @@ namespace ControleDeContatos.Controllers
     public class ContatoController : Controller
     {
         private readonly IContatoRepositorio _contatoRepositorio;
-        public ContatoController(IContatoRepositorio contatoRepositorio)
+        private readonly ISessao _isessao;
+        public ContatoController(IContatoRepositorio contatoRepositorio, ISessao isessao)
         {
             _contatoRepositorio = contatoRepositorio;
+            _isessao = isessao;
         }
         public IActionResult Index()
         {
-            List<ContatoModel> contatos = _contatoRepositorio.BuscarTodos();
+            UsuarioModel usuario = _isessao.BuscarSessaoDoUsuario();
+            List<ContatoModel> contatos = _contatoRepositorio.BuscarTodos(usuario.Id);
+
             return View(contatos);
         }
         public IActionResult Criar()
@@ -25,13 +30,34 @@ namespace ControleDeContatos.Controllers
         }
         public IActionResult Editar(int id)
         {
-            ContatoModel contato = _contatoRepositorio.ListarPorId(id);
-            return View(contato);
+            try
+            {
+                ContatoModel contato = _contatoRepositorio.ListarPorId(id);
+                if (contato.UsuarioId != _isessao.BuscarSessaoDoUsuario().Id)
+                {
+                    TempData["MensagemErro"] = "Você não tem acesso a este contato";
+                    return RedirectToAction("Index");
+                }
+                return View(contato);
+            }
+            catch (System.Exception)
+            {
+
+                TempData["MensagemErro"] = "Ops!! Usuário não existe!";
+                return RedirectToAction("Index");
+            }
+
         }
         public IActionResult ApagarConfirmacao(int id)
         {
             ContatoModel contato = _contatoRepositorio.ListarPorId(id);
+            if (contato == null)
+            {
+                TempData["MensagemErro"] = "Ops!! Usuário não existe!";
+                return RedirectToAction("Index");
+            }
             return View(contato);
+
         }
 
         [HttpPost]
@@ -41,6 +67,7 @@ namespace ControleDeContatos.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    contatoid.UsuarioId = _isessao.BuscarSessaoDoUsuario().Id;
                     _contatoRepositorio.Adicionar(contatoid);
                     TempData["MensagemSucesso"] = "Contato cadastrado com sucesso";
                     return RedirectToAction("Index");

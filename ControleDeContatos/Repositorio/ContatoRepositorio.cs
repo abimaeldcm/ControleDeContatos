@@ -19,9 +19,10 @@ namespace ControleDeContatos.Repositorio
             return _bancoContext.Contatos.FirstOrDefault(c => c.Id == id);
         }
 
-        public List<ContatoModel> BuscarTodos()
+        public List<ContatoModel> BuscarTodos(int id)
         {
-            return _bancoContext.Contatos.ToList();
+            return _bancoContext.Contatos.Where(x => x.UsuarioId == id).ToList();
+            
         }
 
         public ContatoModel Adicionar(ContatoModel contato)

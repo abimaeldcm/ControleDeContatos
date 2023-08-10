@@ -6,6 +6,7 @@ using System;
 using ControleDeContatos.Enums;
 using ControleDeContatos.Helper;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.EntityFrameworkCore;
 
 namespace ControleDeContatos.Repositorio
 {

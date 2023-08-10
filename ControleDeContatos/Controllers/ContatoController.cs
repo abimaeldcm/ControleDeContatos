@@ -53,7 +53,7 @@ namespace ControleDeContatos.Controllers
             ContatoModel contato = _contatoRepositorio.ListarPorId(id);
             if (contato == null)
             {
-                TempData["MensagemErro"] = "Ops!! Usuário não existe!";
+                TempData["MensagemErro"] = "Ops!! contato não existe!";
                 return RedirectToAction("Index");
             }
             return View(contato);
